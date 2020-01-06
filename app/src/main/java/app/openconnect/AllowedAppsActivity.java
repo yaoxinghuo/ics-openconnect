@@ -14,6 +14,7 @@ package app.openconnect;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -35,7 +36,6 @@ import app.openconnect.core.ProfileManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -53,12 +53,10 @@ public class AllowedAppsActivity extends Activity {
 
     private AllowedAppsAdapter adapter;
     private List<PackageInfo> packageInfos = new ArrayList<>();
-    ArrayList<HashMap<String, Object>> items = new ArrayList<HashMap<String, Object>>();
 
     private String mUUID;
 
     private VpnProfile mProfile;
-    private List<VpnProfile> mVpnProfileList;
     private Set<String> allowedApps = new HashSet<>();
     private boolean allowMode = true;
     private boolean allowByPass = false;
@@ -115,7 +113,8 @@ public class AllowedAppsActivity extends Activity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                searchChanged(newText);
+                //it is too slow
+//                searchChanged(newText);
                 return true;
             }
         });
@@ -207,7 +206,11 @@ public class AllowedAppsActivity extends Activity {
             PackageInfo packageInfo = getItem(position);
 
             String packageName = packageInfo.packageName;
-            holder.appName.setText(packageInfo.applicationInfo.loadLabel(pm));
+            String appName = packageInfo.applicationInfo.loadLabel(pm).toString();
+            if ((packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
+                appName = "** " + appName;//indicate this is system app
+            }
+            holder.appName.setText(appName);
             holder.packageName.setText(packageName);
             holder.iconView.setImageDrawable(packageInfo.applicationInfo.loadIcon(pm));
             holder.checkBox.setChecked(allowedApps.contains(packageName));
