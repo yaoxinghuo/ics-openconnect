@@ -52,7 +52,7 @@ public class QSTileService extends TileService {
     }
 
     @Override
-    public void onClick() {
+    public void onClick( ) {
         super.onClick();
 
         toggle();

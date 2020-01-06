@@ -24,18 +24,12 @@
 
 package app.openconnect.fragments;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import app.openconnect.FileSelect;
-import app.openconnect.ConnectionEditorActivity;
-import app.openconnect.R;
-import app.openconnect.ShowTextPreference;
-import app.openconnect.TokenImportActivity;
-import app.openconnect.VpnProfile;
-import app.openconnect.core.ProfileManager;
-
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.EditTextPreference;
@@ -44,14 +38,20 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import android.widget.TextView;
+import app.openconnect.AllowedAppsActivity;
+import app.openconnect.ConnectionEditorActivity;
+import app.openconnect.FileSelect;
+import app.openconnect.R;
+import app.openconnect.ShowTextPreference;
+import app.openconnect.TokenImportActivity;
+import app.openconnect.VpnProfile;
+import app.openconnect.core.ProfileManager;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ConnectionEditorFragment extends PreferenceFragment
 		implements OnSharedPreferenceChangeListener {
@@ -216,6 +216,16 @@ public class ConnectionEditorFragment extends PreferenceFragment
 				return false;
 			}
 		});
+
+		findPreference("allowed_apps_check").setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(getActivity(), AllowedAppsActivity.class);
+                intent.putExtra(AllowedAppsActivity.EXTRA_UUID, mUUID);
+                startActivity(intent);
+                return false;
+            }
+        });
 	}
 
 	@Override

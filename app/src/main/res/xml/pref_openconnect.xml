@@ -25,6 +25,7 @@
             android:key="ca_certificate"
             android:title="@string/ca_certificate"
             android:defaultValue="" />
+		<Preference android:key="allowed_apps_check" android:title="Allowed Apps" android:summary="Allow or Disallow Apps"></Preference>
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/authentication"
@@ -131,4 +132,5 @@
             android:inputType="number"
             android:defaultValue="" />
     </PreferenceCategory>
+
 </PreferenceScreen>

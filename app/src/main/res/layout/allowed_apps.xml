@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+
+	<ProgressBar
+			android:id="@+id/pb_waiting"
+			style="@android:style/Widget.DeviceDefault.ProgressBar"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_centerHorizontal="true"
+			android:layout_centerVertical="true" />
+
+	<LinearLayout
+			android:id="@+id/top"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_margin="8dp">
+		<CheckBox
+				android:layout_width="wrap_content" android:id="@+id/allow_mode"
+				android:layout_height="wrap_content" android:text="Allow Mode" />
+		<CheckBox
+				android:layout_width="wrap_content" android:id="@+id/allow_bypass"
+				android:layout_height="wrap_content" android:text="Allow App Bypass" />
+	</LinearLayout>
+
+	<ListView
+			android:layout_below="@id/top"
+			android:layout_width="match_parent" android:id="@+id/allowed_apps"
+			android:layout_height="match_parent" />
+
+
+
+</RelativeLayout>

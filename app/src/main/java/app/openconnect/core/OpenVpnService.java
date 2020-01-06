@@ -36,7 +36,9 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.VpnService;
-import android.os.*;
+import android.os.Binder;
+import android.os.Handler;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import app.openconnect.MainActivity;
@@ -45,13 +47,12 @@ import app.openconnect.VpnProfile;
 import app.openconnect.api.GrantPermissionsActivity;
 import app.openconnect.core.VPNLog.LogArrayAdapter;
 import app.openconnect.fragments.FeedbackFragment;
+import org.infradead.libopenconnect.LibOpenConnect;
+import org.infradead.libopenconnect.LibOpenConnect.VPNStats;
 
 import java.net.InetAddress;
 import java.util.Date;
 import java.util.Locale;
-
-import org.infradead.libopenconnect.LibOpenConnect;
-import org.infradead.libopenconnect.LibOpenConnect.VPNStats;
 
 public class OpenVpnService extends VpnService {
 
@@ -505,4 +506,5 @@ public class OpenVpnService extends VpnService {
 		killVPNThread(false);
 		ProfileManager.setConnectedVpnProfileDisconnected();
 	}
+
 }
