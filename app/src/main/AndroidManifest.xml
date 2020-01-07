@@ -34,8 +34,7 @@
             android:name=".ConnectionEditorActivity" />
         <activity
             android:name=".FragActivity" />
-        <activity android:name=".AllowedAppsActivity" android:label="Allowed Apps">
-		</activity>
+        <activity android:name=".AllowedAppsActivity" />
         <activity
             android:name=".TokenImportActivity"
             android:exported="true" >

@@ -87,8 +87,8 @@ public class OpenConnectManagementThread implements Runnable, OpenVPNManagement 
     private boolean mAuthDone = false;
 
     private Set<String> mAllowedAppsVpn = new HashSet<>();
+    private boolean mPerappVpnEnabled = false;
     private boolean mAllowedAppsVpnAreDisallowed = true;
-    private boolean mAllowAppVpnBypass = false;
 
     private boolean mRequestPause;
     private boolean mRequestDisconnect;
@@ -508,9 +508,9 @@ public class OpenConnectManagementThread implements Runnable, OpenVPNManagement 
             return false;
         }
 
+        mPerappVpnEnabled = getBoolPref("perapp_vpn_enabled");
         mAllowedAppsVpn = getStringSetPref("allowed_apps");
         mAllowedAppsVpnAreDisallowed = getBoolPref("allow_apps_are_disallowed");
-        mAllowAppVpnBypass = getBoolPref("allow_bypass");
 
         prefChanged();
 
@@ -865,6 +865,11 @@ public class OpenConnectManagementThread implements Runnable, OpenVPNManagement 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void setAllowedVpnPackages(VpnService.Builder builder) {
 
+        if(!mPerappVpnEnabled) {
+            log("per-app vpn disabled");
+            return;
+        }
+
         for (String pkg : mAllowedAppsVpn) {
             try {
                 if (mAllowedAppsVpnAreDisallowed) {
@@ -884,10 +889,6 @@ public class OpenConnectManagementThread implements Runnable, OpenVPNManagement 
             log("allowed vpn apps info: " + TextUtils.join(", ", mAllowedAppsVpn));
         }
 
-        if (mAllowAppVpnBypass) {
-            builder.allowBypass();
-            log("Apps may bypass VPN");
-        }
     }
 
 

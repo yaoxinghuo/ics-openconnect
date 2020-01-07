@@ -17,11 +17,11 @@
 			android:layout_height="wrap_content"
 			android:layout_margin="8dp">
 		<CheckBox
+				android:layout_width="wrap_content" android:id="@+id/perapp_vpn_enabled"
+				android:layout_height="wrap_content" android:text="Enable Per-app VPN" />
+		<CheckBox
 				android:layout_width="wrap_content" android:id="@+id/allow_mode"
 				android:layout_height="wrap_content" android:text="Allow Mode" />
-		<CheckBox
-				android:layout_width="wrap_content" android:id="@+id/allow_bypass"
-				android:layout_height="wrap_content" android:text="Allow App Bypass" />
 	</LinearLayout>
 
 	<ListView

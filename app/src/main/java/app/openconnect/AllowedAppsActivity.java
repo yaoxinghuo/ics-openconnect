@@ -62,9 +62,9 @@ public class AllowedAppsActivity extends Activity {
     private VpnProfile mProfile;
     private Set<String> allowedApps = new HashSet<>();
     private boolean allowMode = true;
-    private boolean allowByPass = false;
+    private boolean perappVpnEnabled = false;
     private CheckBox allowModeCheckBox;
-    private CheckBox allowByPassCheckBox;
+    private CheckBox perappVpnEnabledCheckBox;
     private SearchView searchView;
     private ProgressBar progressBar;
 
@@ -81,7 +81,7 @@ public class AllowedAppsActivity extends Activity {
             if (mProfile != null) {
                 allowedApps = mProfile.mPrefs.getStringSet("allowed_apps", new HashSet<String>());
                 allowMode = !mProfile.mPrefs.getBoolean("allow_apps_are_disallowed", false);
-                allowByPass = mProfile.mPrefs.getBoolean("allow_bypass", false);
+                perappVpnEnabled = mProfile.mPrefs.getBoolean("perapp_vpn_enabled", false);
             }
         }
 
@@ -91,10 +91,10 @@ public class AllowedAppsActivity extends Activity {
         list.setOnItemClickListener(adapter);
 
         allowModeCheckBox = findViewById(R.id.allow_mode);
-        allowByPassCheckBox = findViewById(R.id.allow_bypass);
+        perappVpnEnabledCheckBox = findViewById(R.id.perapp_vpn_enabled);
 
         allowModeCheckBox.setChecked(allowMode);
-        allowByPassCheckBox.setChecked(allowByPass);
+        perappVpnEnabledCheckBox.setChecked(perappVpnEnabled);
 
         progressBar = findViewById(R.id.pb_waiting);
 
@@ -138,7 +138,7 @@ public class AllowedAppsActivity extends Activity {
 
         mProfile.mPrefs.edit().putStringSet("allowed_apps", allowedApps)
                 .putBoolean("allow_apps_are_disallowed", !allowModeCheckBox.isChecked())
-                .putBoolean("allow_bypass", allowByPassCheckBox.isChecked())
+                .putBoolean("perapp_vpn_enabled", perappVpnEnabledCheckBox.isChecked())
                 .commit();
     }
 

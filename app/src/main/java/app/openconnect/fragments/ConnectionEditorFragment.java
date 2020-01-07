@@ -217,13 +217,13 @@ public class ConnectionEditorFragment extends PreferenceFragment
 			}
 		});
 
-		findPreference("allowed_apps_check").setOnPreferenceClickListener(new OnPreferenceClickListener() {
+		findPreference("perapp_vpn_enabled").setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 Intent intent = new Intent(getActivity(), AllowedAppsActivity.class);
                 intent.putExtra(AllowedAppsActivity.EXTRA_UUID, mUUID);
                 startActivity(intent);
-                return false;
+                return true;
             }
         });
 	}

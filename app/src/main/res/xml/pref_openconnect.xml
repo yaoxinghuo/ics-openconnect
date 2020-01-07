@@ -25,7 +25,7 @@
             android:key="ca_certificate"
             android:title="@string/ca_certificate"
             android:defaultValue="" />
-		<Preference android:key="allowed_apps_check" android:title="Allowed Apps" android:summary="Allow or Disallow Apps"></Preference>
+		<Preference android:key="perapp_vpn_enabled" android:title="Per-app VPN" android:summary="Allow or Disallow Apps VPN" />
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/authentication"
