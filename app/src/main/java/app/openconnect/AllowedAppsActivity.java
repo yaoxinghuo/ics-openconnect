@@ -17,7 +17,9 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,6 +30,7 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -63,7 +66,7 @@ public class AllowedAppsActivity extends Activity {
     private CheckBox allowModeCheckBox;
     private CheckBox allowByPassCheckBox;
     private SearchView searchView;
-    private String keywords;
+    private ProgressBar progressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -93,9 +96,9 @@ public class AllowedAppsActivity extends Activity {
         allowModeCheckBox.setChecked(allowMode);
         allowByPassCheckBox.setChecked(allowByPass);
 
-        loadApps();
+        progressBar = findViewById(R.id.pb_waiting);
 
-        findViewById(R.id.pb_waiting).setVisibility(View.GONE);
+        new SearchTask(progressBar).execute("");
 
     }
 
@@ -113,17 +116,20 @@ public class AllowedAppsActivity extends Activity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                //it is too slow
-//                searchChanged(newText);
+                searchChanged(newText);
                 return true;
             }
         });
         return super.onCreateOptionsMenu(menu);
     }
 
-    public void searchChanged(String keywords) {
-        this.keywords = keywords;
-        loadApps();
+    Debounce debounce = new Debounce(300);
+    public void searchChanged(final String keywords) {
+        debounce.attempt(new Runnable() {
+            @Override public void run() {
+                new SearchTask(progressBar).execute(keywords);
+            }
+        });
     }
 
     @Override
@@ -139,18 +145,7 @@ public class AllowedAppsActivity extends Activity {
     private void loadApps() {
         this.packageInfos.clear();
         PackageManager pm = getPackageManager();
-        List<PackageInfo> infos = pm.getInstalledPackages(0);
-        if (TextUtils.isEmpty(keywords)) {
-            this.packageInfos.addAll(infos);
-        } else {
-            for (PackageInfo info : infos) {
-                String packageName = info.packageName.toLowerCase();
-                String name = info.applicationInfo.loadLabel(pm).toString().toLowerCase();
-                if (packageName.contains(keywords) || name.contains(keywords)) {
-                    this.packageInfos.add(info);
-                }
-            }
-        }
+        this.packageInfos = pm.getInstalledPackages(0);
 
         Collections.sort(packageInfos, new Comparator<PackageInfo>() {
             @Override
@@ -164,27 +159,73 @@ public class AllowedAppsActivity extends Activity {
                 return o1.packageName.compareTo(o2.packageName);
             }
         });
-        adapter.notifyDataSetChanged();
+    }
+
+    class SearchTask extends AsyncTask<String, Void, List<PackageInfo>> {
+        private ProgressBar dialog;
+
+        public SearchTask(ProgressBar dialog) {
+            this.dialog = dialog;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            dialog.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected void onPostExecute(List<PackageInfo> results) {
+            dialog.setVisibility(View.GONE);
+            adapter.updateItems(results);
+        }
+
+        @Override
+        protected List<PackageInfo> doInBackground(String... strings) {
+            if (packageInfos.size() == 0) {
+                loadApps();
+            }
+            String keywords = strings[0];
+            PackageManager pm = getPackageManager();
+            if (TextUtils.isEmpty(keywords)) {
+                return packageInfos;
+            } else {
+                List<PackageInfo> list2 = new ArrayList<>();
+                for (PackageInfo info : packageInfos) {
+                    String packageName = info.packageName.toLowerCase();
+                    String name = info.applicationInfo.loadLabel(pm).toString().toLowerCase();
+                    if (packageName.contains(keywords) || name.contains(keywords)) {
+                        list2.add(info);
+                    }
+                }
+                return list2;
+            }
+        }
     }
 
     class AllowedAppsAdapter extends BaseAdapter implements AdapterView.OnItemClickListener {
 
         Context mContext;
         PackageManager pm;
+        List<PackageInfo> items = new ArrayList<>();
 
         public AllowedAppsAdapter(Context mContext) {
             this.mContext = mContext;
             this.pm = mContext.getPackageManager();
         }
 
+        public void updateItems(List<PackageInfo> newItems) {
+            this.items = newItems;
+            notifyDataSetChanged();
+        }
+
         @Override
         public int getCount() {
-            return packageInfos.size();
+            return items.size();
         }
 
         @Override
         public PackageInfo getItem(int position) {
-            return packageInfos.get(position);
+            return items.get(position);
         }
 
         @Override
@@ -224,7 +265,6 @@ public class AllowedAppsActivity extends Activity {
             PackageInfo packageInfo = getItem(position);
             String packageName = packageInfo.packageName;
             boolean contains = allowedApps.contains(packageName);
-            System.out.println("contains: " + packageName + ".c:" + contains);
             if (contains) {
                 allowedApps.remove(packageName);
             } else {
@@ -246,6 +286,22 @@ public class AllowedAppsActivity extends Activity {
             checkBox = v.findViewById(R.id.check);
             iconView = v.findViewById(R.id.icon);
         }
+    }
+
+    class Debounce {
+
+        private Handler mHandler = new Handler();
+        private long mInterval;
+
+        public Debounce(long interval) {
+            mInterval = interval;
+        }
+
+        public void attempt(Runnable runnable) {
+            mHandler.removeCallbacksAndMessages(null);
+            mHandler.postDelayed(runnable, mInterval);
+        }
+
     }
 
 }
