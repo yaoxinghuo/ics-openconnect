@@ -29,6 +29,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app"
         android:supportsRtl="true"
+		android:theme="@android:style/ThemeOverlay.Material.Dark"
         android:name="app.openconnect.Application" >
         <activity
             android:name=".ConnectionEditorActivity" />
